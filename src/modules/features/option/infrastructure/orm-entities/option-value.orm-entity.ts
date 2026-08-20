@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, Unique } from 'typeorm';
 
 import { OptionOrmEntity } from './option.orm-entity';
 
@@ -9,15 +9,19 @@ export interface OptionValueOrmEntityProps {
 }
 
 @Entity({ name: 'option_values' })
-@Unique(['optionId', 'name'])
+@Unique('uq_option_values_option_id_name', ['optionId', 'name'])
 export class OptionValueOrmEntity {
-    @PrimaryColumn('uuid', { name: 'id' })
+    @PrimaryColumn('uuid', { name: 'id', primaryKeyConstraintName: 'pk_option_values' })
     public id: string;
 
+    @JoinColumn({ name: 'option_id', foreignKeyConstraintName: 'fk_option_values_option_id' })
+    @ManyToOne(() => OptionOrmEntity, option => option.optionValues, { nullable: false, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    public option?: OptionOrmEntity;
+    @Column({ name: 'option_id' })
     public optionId: string;
 
-    public option?: OptionOrmEntity;
-
+    @Index('ix_option_values_name')
+    @Column({ name: 'name', type: 'text', nullable: false })
     public name: string;
 
     // Hydrating a row instantiates without arguments, so the props are optional.

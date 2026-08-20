@@ -15,7 +15,7 @@ export class ProductMapper {
         if (!ormEntity.variants) throw new RelationNotLoadedException(ProductOrmEntity.name, 'variants');
         return Product.reconstitute({
             id: new ProductId(ormEntity.id),
-            categoryId: new CategoryId(ormEntity.categoryId),
+            categoryId: ormEntity.categoryId ? new CategoryId(ormEntity.categoryId) : null,
             handle: ormEntity.handle,
             name: ormEntity.name,
             description: ormEntity.description,
@@ -27,7 +27,7 @@ export class ProductMapper {
     public toOrmEntity(entity: Product): ProductOrmEntity {
         return new ProductOrmEntity({
             id: entity.id.serialize(),
-            categoryId: entity.categoryId.serialize(),
+            categoryId: entity.categoryId?.serialize() ?? null,
             handle: entity.handle,
             name: entity.name,
             description: entity.description,

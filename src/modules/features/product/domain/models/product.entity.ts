@@ -9,7 +9,7 @@ import { Variant } from './variant.entity';
 export interface ProductProps {
     id: ProductId;
 
-    categoryId: CategoryId;
+    categoryId: CategoryId | null;
 
     handle: string;
     name: string;
@@ -22,7 +22,7 @@ export interface ProductProps {
 export class Product extends DomainEntity {
     public readonly id: ProductId;
 
-    protected _categoryId: CategoryId;
+    protected _categoryId: CategoryId | null;
 
     protected _handle: string;
     protected _name: string;
@@ -47,7 +47,7 @@ export class Product extends DomainEntity {
         return new Product(props);
     }
 
-    public get categoryId(): CategoryId {
+    public get categoryId(): CategoryId | null {
         return this._categoryId;
     }
 
@@ -71,7 +71,7 @@ export class Product extends DomainEntity {
         return [...this._variants];
     }
 
-    public set categoryId(categoryId: CategoryId) {
+    public set categoryId(categoryId: CategoryId | null) {
         this._categoryId = categoryId;
     }
 
@@ -91,7 +91,7 @@ export class Product extends DomainEntity {
     public copy(): Product {
         return new Product({
             id: this.id.copy(),
-            categoryId: this._categoryId.copy(),
+            categoryId: this._categoryId?.copy() ?? null,
             handle: this._handle,
             name: this._name,
             description: this._description,
