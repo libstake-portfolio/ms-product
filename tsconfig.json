@@ -1,0 +1,49 @@
+{
+    "compilerOptions": {
+        // ── Language / output target ──────────────────────────────
+        "target": "ES2022",
+        "lib": ["ES2022"],
+
+        // ── Module system (NestJS runs on CommonJS) ───────────────
+        // "bundler" resolution is what lets the "paths" alias below
+        // work; "nodenext" ignores paths and forces .js extensions.
+        "module": "commonjs",
+        "moduleResolution": "bundler",
+
+        // ── NestJS DI / decorators (required) ─────────────────────
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        // ── Type roots ────────────────────────────────────────────
+        // @types/node is a pnpm symlink and is NOT auto-discovered by
+        // tsc here, so global `console`/`process`/`Buffer` go missing
+        // (TS2584). Listing it explicitly restores them.
+        "types": ["node", "jest"],
+
+        // ── Emit ──────────────────────────────────────────────────
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "sourceMap": true,
+
+        // ── Interop ───────────────────────────────────────────────
+        "esModuleInterop": true,
+
+        // ── Type safety ───────────────────────────────────────────
+        "strict": true,
+        // Nest assigns injected fields outside the constructor.
+        "strictPropertyInitialization": false,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+
+        // ── Path alias: @modules/* -> src/modules/* ───────────────
+        // (resolved relative to this file; baseUrl was removed in TS7)
+        "paths": {
+            "@modules/*": ["./src/modules/*"],
+            "@configs/*": ["./src/configs/*"],
+            "@common/*": ["./src/common/*"],
+            "@define/*": ["./src/define/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

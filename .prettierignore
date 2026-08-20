@@ -1,0 +1,8 @@
+# pnpm
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+# Documents
+*.md
+docs/
