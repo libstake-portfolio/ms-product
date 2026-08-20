@@ -7,6 +7,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import databaseConfig from '@configs/database.config';
+import { ServerLoggerTypeOrmAdapter } from '@modules/common/server-logger/adapters/typeorm-logger.adapter';
 
 type DatabaseConfig = ConfigType<typeof databaseConfig>;
 
@@ -15,6 +16,8 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
     public constructor(
         @Inject(ConfigService)
         public readonly configService: ConfigService,
+        @Inject(ServerLoggerTypeOrmAdapter)
+        private readonly typeOrmLogger: ServerLoggerTypeOrmAdapter,
     ) {}
 
     public createTypeOrmOptions(_connectionName?: string): TypeOrmModuleOptions {
@@ -41,8 +44,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
             dropSchema: this.configService.get('database.dropSchema') || false,
             namingStrategy: new SnakeNamingStrategy(),
             logging: this.configService.get('database.logging') || false,
-            // TODO - Implement custom logger
-            logger: this.configService.get('database.logging') ? 'advanced-console' : undefined,
+            logger: this.configService.get('database.logging') ? this.typeOrmLogger : undefined,
             entities: [join(__dirname, '../../../**/*{.orm-entity.ts,.orm-entity.js}'), join(__dirname, '../../../**/*{.view-entity.ts,.view-entity.js}'), join(__dirname, '../../../**/*{.view.ts,.view.js}')],
             migrations: [join(__dirname, 'seeds/*.seed{.js,.ts}')],
             poolSize: 20, // Default - 10

@@ -6,3 +6,6 @@ pnpm-workspace.yaml
 # Documents
 *.md
 docs/
+
+# Logs
+logs/

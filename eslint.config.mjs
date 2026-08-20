@@ -46,5 +46,5 @@ export default defineConfig([
             ],
         },
     },
-    globalIgnores(['dist', 'coverage']),
+    globalIgnores(['dist', 'coverage', 'logs']),
 ]);
