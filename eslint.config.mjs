@@ -26,6 +26,7 @@ export default defineConfig([
             'unused-imports/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
             '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
             '@typescript-eslint/no-empty-object-type': 'off',
+            '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
             'no-console': 'warn',
             'import/no-unresolved': 'error',
             'import/order': [
