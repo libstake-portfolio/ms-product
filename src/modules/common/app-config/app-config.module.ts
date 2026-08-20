@@ -1,6 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigModuleOptions } from '@nestjs/config';
 
+import databaseConfig from '@configs/database.config';
 import serverConfig from '@configs/server.config';
 
 const NODE_ENVS = ['local', 'dev', 'test', 'prod'];
@@ -14,7 +15,7 @@ export class AppConfigModule {
             imports: [
                 ConfigModule.forRoot({
                     isGlobal: true,
-                    load: [serverConfig],
+                    load: [serverConfig, databaseConfig],
                     // If use external env -- not from dotenv, set true
                     ignoreEnvFile: false,
                     envFilePath: this.resolveEnvFilePath(),

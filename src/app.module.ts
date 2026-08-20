@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 
 import { AppConfigModule } from '@modules/common/app-config/app-config.module';
+import { DatabaseModule } from '@modules/common/database/database.module';
 
 @Module({
-    imports: [],
+    imports: [DatabaseModule],
 })
 class NestedModule {}
 
