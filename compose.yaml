@@ -1,0 +1,41 @@
+# Local topology only. Real environments reach a managed database, so nothing here is deployed.
+name: ms-product
+
+services:
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_USER: ${DATABASE_USER:-ms_product}
+            POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ms_product}
+            POSTGRES_DB: ${DATABASE_DATABASE_NAME:-ms_product}
+        ports:
+            - '${DATABASE_PORT:-5432}:5432'
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-ms_product} -d ${DATABASE_DATABASE_NAME:-ms_product}']
+            interval: 5s
+            timeout: 3s
+            retries: 10
+
+    server:
+        build:
+            context: .
+            target: dev
+        depends_on:
+            postgres:
+                condition: service_healthy
+        environment:
+            NODE_ENV: local
+            # Set here because the database is reached over the compose network rather than from the host.
+            DATABASE_HOST: postgres
+            DATABASE_PORT: 5432
+        ports:
+            - '${SERVER_PORT:-3000}:${SERVER_PORT:-3000}'
+        volumes:
+            - .:/app
+            # Keeps the dependencies built inside the image instead of the host ones.
+            - /app/node_modules
+
+volumes:
+    postgres-data:

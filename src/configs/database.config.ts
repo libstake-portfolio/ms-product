@@ -3,7 +3,7 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('database', () => {
     // Read replicas differ from the master only by host.
     const credentials = {
-        port: parseInt(process.env.DATABASE_PORT ?? '3306', 10),
+        port: parseInt(process.env.DATABASE_PORT ?? '5432', 10),
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_DATABASE_NAME,

@@ -1,0 +1,19 @@
+node_modules
+dist
+coverage
+logs
+
+.git
+.gitignore
+.husky
+.vscode
+.claude
+
+docs
+*.md
+!README.md
+
+# Real values must never be baked into an image.
+envs/.env.*
+!envs/.env.default
+!envs/.env.example

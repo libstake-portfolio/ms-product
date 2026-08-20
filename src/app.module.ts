@@ -4,6 +4,7 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import loggerConfig from '@configs/logger.config';
 import { AppConfigModule } from '@modules/common/app-config/app-config.module';
 import { DatabaseModule } from '@modules/common/database/database.module';
+import { HealthModule } from '@modules/common/health/health.module';
 import { ServerLoggerModule, ServerLoggerModuleOptions } from '@modules/common/server-logger/server-logger.module';
 
 @Module({
@@ -36,6 +37,7 @@ class NestedModule {}
             },
         }),
         NestedModule,
+        HealthModule,
     ],
 })
 export class AppModule {}

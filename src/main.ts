@@ -16,11 +16,13 @@ const bootstrap = async () => {
 
     const NODE_ENV = configService.get('server.nodeEnv');
     const LISTENING_PORT = configService.get('server.port');
+    // Bound explicitly so the process is reachable from outside its container.
+    const LISTENING_HOST = configService.get('server.host');
 
-    await app.listen(LISTENING_PORT, () => {
+    await app.listen(LISTENING_PORT, LISTENING_HOST, () => {
         /* eslint-disable no-console */
         console.log(`Server is running.`);
-        console.log(`PORT "${LISTENING_PORT}" under NODE_ENV "${NODE_ENV}".`);
+        console.log(`Listening on "${LISTENING_HOST}:${LISTENING_PORT}" under NODE_ENV "${NODE_ENV}".`);
     });
 };
 
