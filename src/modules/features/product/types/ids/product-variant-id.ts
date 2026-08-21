@@ -1,6 +1,6 @@
 import { AnyId } from '@common/base/any-id';
 
-export class VariantId extends AnyId<'VariantId'> {
+export class ProductVariantId extends AnyId<'ProductVariantId'> {
     public constructor(value: string) {
         super(value);
     }

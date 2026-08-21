@@ -48,6 +48,27 @@
 public id: string;
 ```
 
+행이 **두 대상을 잇는 것 말고 아무것도 아니라면** 대리키를 두지 않는다. 참조 쌍이 곧 그 행의 정체이므로 그 쌍을 기본 키로 삼는다. 참조 쌍의 선언 형태는 그대로 두고 외래 키 속성만 기본 키가 되며, 제약 이름은 두 열에 같은 값을 준다.
+
+```ts
+@JoinColumn({ name: '<owner>_id', foreignKeyConstraintName: 'fk_<table_name>_<owner>_id' })
+@ManyToOne(() => <Owner>OrmEntity, <owner> => <owner>.<inverse>, { nullable: false, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+public <owner>?: <Owner>OrmEntity;
+@PrimaryColumn('uuid', { name: '<owner>_id', primaryKeyConstraintName: 'pk_<table_name>' })
+public <owner>Id: string;
+
+@JoinColumn({ name: '<ref>_id', foreignKeyConstraintName: 'fk_<table_name>_<ref>_id' })
+@ManyToOne(() => <Ref>OrmEntity, { nullable: false, onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+public <ref>?: <Ref>OrmEntity;
+@Index('ix_<table_name>_<ref>_id')
+@PrimaryColumn('uuid', { name: '<ref>_id', primaryKeyConstraintName: 'pk_<table_name>' })
+public <ref>Id: string;
+```
+
+이렇게 두면 "같은 쌍은 한 번만"이 유일 제약을 따로 두지 않아도 성립한다.
+
+대리키를 붙일지는 **도메인에 대응물이 있는지**로 판단한다. 도메인 쪽이 그 식별자를 갖지 않으면 저장할 때마다 새로 만들어야 하고, 그러면 같은 행을 다시 저장하는 길이 사라진다.
+
 ### 일반 컬럼
 
 ```ts
@@ -124,7 +145,8 @@ public constructor(props?: <Name>OrmEntityProps) {
 | --- | --- |
 | 외래 키 컬럼 | 붙인다. 자동으로 생기지 않는다 |
 | 이름·식별용 문자열처럼 조회 조건이 되는 컬럼 | 붙인다 |
-| 여러 컬럼 유일 제약의 앞쪽 컬럼 | 붙이지 않는다. 유일 제약이 이미 그 역할을 한다 |
+| 여러 컬럼 유일 제약이나 복합 기본 키의 앞쪽 컬럼 | 붙이지 않는다. 제약이 이미 그 역할을 한다 |
+| 복합 기본 키의 뒤쪽 컬럼 | 붙인다. 앞쪽 컬럼을 거치지 않는 조회가 덮이지 않는다 |
 | 본문·설명처럼 조건으로 쓰이지 않는 컬럼 | 붙이지 않는다 |
 
 유일해야 하는 값과 자주 찾는 값은 다르다. 중복을 막을 의도가 없다면 유일 인덱스를 쓰지 않는다.

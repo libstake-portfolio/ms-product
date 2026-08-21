@@ -15,7 +15,7 @@ export class OptionValueOrmEntity {
     public id: string;
 
     @JoinColumn({ name: 'option_id', foreignKeyConstraintName: 'fk_option_values_option_id' })
-    @ManyToOne(() => OptionOrmEntity, option => option.optionValues, { nullable: false, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @ManyToOne(() => OptionOrmEntity, option => option.values, { nullable: false, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     public option?: OptionOrmEntity;
     @Column({ name: 'option_id' })
     public optionId: string;

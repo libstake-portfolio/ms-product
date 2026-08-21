@@ -9,12 +9,17 @@ export interface OptionValueProps {
 
 export class OptionValue extends DomainEntity {
     public readonly id: OptionValueId;
+
     protected _name: string;
 
     protected constructor({ id, name }: OptionValueProps) {
         super();
         this.id = id;
         this._name = name;
+    }
+
+    public static create(props: OptionValueProps): OptionValue {
+        return new OptionValue(props);
     }
 
     // Rebuilds an already-persisted entity as-is, without validating.
@@ -26,7 +31,8 @@ export class OptionValue extends DomainEntity {
         return this._name;
     }
 
-    public set name(name: string) {
+    // The root drives this so the fact reaches the event log; a value records nothing on its own.
+    public rename(name: string): void {
         this._name = name;
     }
 

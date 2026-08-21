@@ -1,9 +1,12 @@
 import { TypedCommand } from '@modules/common/server-cqrs/types/typed-command';
+import { CategoryId } from '@modules/features/category/types/ids/category-id';
 
 import { ProductId } from '../../types/ids/product-id';
 
 export interface CreateProductCommandProps {
     payload: {
+        categoryId: CategoryId | null;
+        handle: string;
         name: string;
         descriptionHtml: string;
     };

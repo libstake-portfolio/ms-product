@@ -1,8 +1,9 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { CategoryOrmEntity } from '@modules/features/category/infrastructure/orm-entities/category.orm-entity';
 
-import { VariantOrmEntity } from './variant.orm-entity';
+import { ProductOptionOrmEntity } from './product-option.orm-entity';
+import { ProductVariantOrmEntity } from './product-variant.orm-entity';
 
 export interface ProductOrmEntityProps {
     id: string;
@@ -11,6 +12,8 @@ export interface ProductOrmEntityProps {
     name: string;
     description: string;
     descriptionHtml: string;
+    archivedAt: Date | null;
+    deletedAt: Date | null;
 }
 
 @Entity({ name: 'products' })
@@ -39,8 +42,18 @@ export class ProductOrmEntity {
     @Column({ name: 'description_html', type: 'text', nullable: false, default: '' })
     public descriptionHtml: string;
 
-    @OneToMany(() => VariantOrmEntity, variant => variant.product)
-    public variants?: VariantOrmEntity[];
+    // Marked for teardown while downstream still references it; the row stays readable until it is purged.
+    @Column({ name: 'archived_at', type: 'timestamptz', nullable: true })
+    public archivedAt: Date | null;
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+    public deletedAt: Date | null;
+
+    @OneToMany(() => ProductOptionOrmEntity, option => option.product)
+    public options?: ProductOptionOrmEntity[];
+
+    @OneToMany(() => ProductVariantOrmEntity, variant => variant.product)
+    public variants?: ProductVariantOrmEntity[];
 
     // Hydrating a row instantiates without arguments, so the props are optional.
     public constructor(props?: ProductOrmEntityProps) {
@@ -51,5 +64,7 @@ export class ProductOrmEntity {
         this.name = props.name;
         this.description = props.description;
         this.descriptionHtml = props.descriptionHtml;
+        this.archivedAt = props.archivedAt;
+        this.deletedAt = props.deletedAt;
     }
 }

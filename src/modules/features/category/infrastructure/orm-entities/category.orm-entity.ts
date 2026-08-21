@@ -1,13 +1,16 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 
 export interface CategoryOrmEntityProps {
     id: string;
     parentId: string | null;
     name: string;
     fullName: string;
+    archivedAt: Date | null;
+    deletedAt: Date | null;
 }
 
 @Entity({ name: 'categories' })
+@Unique('uq_categories_parent_id_name', ['parentId', 'name'])
 export class CategoryOrmEntity {
     @PrimaryColumn('uuid', { name: 'id', primaryKeyConstraintName: 'pk_categories' })
     public id: string;
@@ -15,7 +18,6 @@ export class CategoryOrmEntity {
     @JoinColumn({ name: 'parent_id', foreignKeyConstraintName: 'fk_categories_parent_id' })
     @ManyToOne(() => CategoryOrmEntity, category => category.children, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
     public parent?: CategoryOrmEntity | null;
-    @Index('ix_categories_parent_id')
     @Column({ name: 'parent_id', nullable: true })
     public parentId: string | null;
 
@@ -23,8 +25,15 @@ export class CategoryOrmEntity {
     @Column({ name: 'name', type: 'text', nullable: false })
     public name: string;
 
+    @Index('ix_categories_full_name')
     @Column({ name: 'full_name', type: 'text', nullable: false })
     public fullName: string;
+
+    @Column({ name: 'archived_at', type: 'timestamptz', nullable: true })
+    public archivedAt: Date | null;
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+    public deletedAt: Date | null;
 
     @OneToMany(() => CategoryOrmEntity, category => category.parent)
     public children?: CategoryOrmEntity[];
@@ -36,5 +45,7 @@ export class CategoryOrmEntity {
         this.parentId = props.parentId;
         this.name = props.name;
         this.fullName = props.fullName;
+        this.archivedAt = props.archivedAt;
+        this.deletedAt = props.deletedAt;
     }
 }

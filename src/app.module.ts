@@ -8,6 +8,9 @@ import { TransactionModule } from '@modules/common/database/transaction.module';
 import { HealthModule } from '@modules/common/health/health.module';
 import { ServerCqrsModule } from '@modules/common/server-cqrs/server-cqrs.module';
 import { ServerLoggerModule, ServerLoggerModuleOptions } from '@modules/common/server-logger/server-logger.module';
+import { CategoryModule } from '@modules/features/category/category.module';
+import { OptionModule } from '@modules/features/option/option.module';
+import { ProductModule } from '@modules/features/product/product.module';
 
 @Module({
     imports: [
@@ -15,6 +18,9 @@ import { ServerLoggerModule, ServerLoggerModuleOptions } from '@modules/common/s
         DatabaseModule,
         TransactionModule,
         HealthModule,
+        CategoryModule,
+        OptionModule,
+        ProductModule,
         ServerLoggerModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService): ServerLoggerModuleOptions => {

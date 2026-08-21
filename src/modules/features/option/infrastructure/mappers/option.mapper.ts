@@ -9,11 +9,13 @@ import { OptionOrmEntity } from '../orm-entities/option.orm-entity';
 
 export class OptionMapper {
     public toDomainEntity(ormEntity: OptionOrmEntity): Option {
-        if (!ormEntity.optionValues) throw new RelationNotLoadedException(OptionOrmEntity.name, 'optionValues');
+        if (!ormEntity.values) throw new RelationNotLoadedException(OptionOrmEntity.name, 'values');
         return Option.reconstitute({
             id: new OptionId(ormEntity.id),
             name: ormEntity.name,
-            optionValues: ormEntity.optionValues.map(optionValue => this.toOptionValueDomainEntity(optionValue)),
+            archivedAt: ormEntity.archivedAt,
+            deletedAt: ormEntity.deletedAt,
+            values: ormEntity.values.map(value => this.toValueDomainEntity(value)),
         });
     }
 
@@ -21,17 +23,19 @@ export class OptionMapper {
         return new OptionOrmEntity({
             id: entity.id.serialize(),
             name: entity.name,
+            archivedAt: entity.archivedAt,
+            deletedAt: entity.deletedAt,
         });
     }
 
-    public toOptionValueDomainEntity(ormEntity: OptionValueOrmEntity): OptionValue {
+    public toValueDomainEntity(ormEntity: OptionValueOrmEntity): OptionValue {
         return OptionValue.reconstitute({
             id: new OptionValueId(ormEntity.id),
             name: ormEntity.name,
         });
     }
 
-    public toOptionValueOrmEntity(entity: OptionValue, optionId: OptionId): OptionValueOrmEntity {
+    public toValueOrmEntity(entity: OptionValue, optionId: OptionId): OptionValueOrmEntity {
         return new OptionValueOrmEntity({
             id: entity.id.serialize(),
             optionId: optionId.serialize(),

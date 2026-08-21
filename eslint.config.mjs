@@ -6,9 +6,16 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
-// Feature modules stay reachable only through a published surface: identifiers, ORM entities for
-// schema-level relations, and the Nest module. Aggregates and persistence internals remain private.
+// Feature modules stay reachable only through a published surface: identifiers, domain events, ORM
+// entities for schema-level relations, and the Nest module. Aggregates and persistence internals remain private.
+//
+// Declared in dependency order: a module may reach the ones before it and never the ones after. The side
+// that defines what exists must not learn about the side that uses it, and a module can only be lifted out
+// into a service of its own while its arrows point one way.
 const FEATURE_MODULES = ['category', 'option', 'product'];
+
+const upstreamOf = name => FEATURE_MODULES.slice(0, FEATURE_MODULES.indexOf(name));
+const downstreamOf = name => FEATURE_MODULES.slice(FEATURE_MODULES.indexOf(name) + 1);
 
 // Layers a given layer must never reach into. Dependencies point inward: types <- domain <- application <- infrastructure <- interface.
 const OUTER_LAYERS = {
@@ -18,9 +25,23 @@ const OUTER_LAYERS = {
     infrastructure: ['interface'],
 };
 
-const crossModulePattern = name => ({
-    group: FEATURE_MODULES.filter(other => other !== name).flatMap(other => [`@modules/features/${other}/domain/**`, `@modules/features/${other}/infrastructure/mappers/**`, `@modules/features/${other}/infrastructure/repositories/**`]),
-    message: 'Reach another feature module only through its types, orm-entities, application, or module file.',
+// What stays private in another feature module. Named one folder at a time rather than blocking `domain`
+// as a whole: a deny list cannot carve an exception back out, and events have to stay reachable.
+const PRIVATE_PATHS = ['domain/models', 'domain/repositories', 'domain/errors', 'infrastructure/mappers', 'infrastructure/repositories'];
+
+// Events are what one module reacts to in another, but the domain layer is not the one reacting.
+// Answering something that happened elsewhere is coordination, so it stays outside the domain.
+const PRIVATE_PATHS_FOR_INNER_LAYERS = ['domain', 'infrastructure/mappers', 'infrastructure/repositories'];
+
+const crossModulePattern = (name, privatePaths = PRIVATE_PATHS) => ({
+    group: upstreamOf(name).flatMap(other => privatePaths.map(privatePath => `@modules/features/${other}/${privatePath}/**`)),
+    message: 'Reach another feature module only through its types, events, orm-entities, application, or module file.',
+});
+
+// Nothing of a module declared later is reachable, whatever its published surface says.
+const downstreamModulePattern = name => ({
+    group: downstreamOf(name).map(other => `@modules/features/${other}/**`),
+    message: 'Feature modules depend one way only; a module declared after this one is downstream and reaching it would close a loop.',
 });
 
 // A library under common keeps the shape of a package: one entry names its surface, so the
@@ -41,17 +62,21 @@ const outerLayerPattern = layer => ({
     message: `Dependencies point inward, so a file under ${layer} cannot import ${OUTER_LAYERS[layer].join(', ')}.`,
 });
 
-const restrictImports = patterns => ({ '@typescript-eslint/no-restricted-imports': ['error', { patterns }] });
+// The first and last module have nothing upstream or downstream of them, and an empty group is not a valid pattern.
+const restrictImports = patterns => ({ '@typescript-eslint/no-restricted-imports': ['error', { patterns: patterns.filter(pattern => pattern.group.length > 0) }] });
 
 // A later entry replaces the rule rather than merging into it, so each layer entry repeats the module patterns.
+// The two innermost layers do not get the events exception; everything outside them does.
+const INNER_LAYERS = ['types', 'domain'];
+
 const featureModuleBoundaries = FEATURE_MODULES.flatMap(name => [
     {
         files: [`src/modules/features/${name}/**/*.ts`],
-        rules: restrictImports([crossModulePattern(name), relativeEscapePattern, libraryEntryPattern]),
+        rules: restrictImports([crossModulePattern(name), downstreamModulePattern(name), relativeEscapePattern, libraryEntryPattern]),
     },
     ...Object.keys(OUTER_LAYERS).map(layer => ({
         files: [`src/modules/features/${name}/${layer}/**/*.ts`],
-        rules: restrictImports([crossModulePattern(name), relativeEscapePattern, libraryEntryPattern, outerLayerPattern(layer)]),
+        rules: restrictImports([crossModulePattern(name, INNER_LAYERS.includes(layer) ? PRIVATE_PATHS_FOR_INNER_LAYERS : PRIVATE_PATHS), downstreamModulePattern(name), relativeEscapePattern, libraryEntryPattern, outerLayerPattern(layer)]),
     })),
 ]);
 
