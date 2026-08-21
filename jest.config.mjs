@@ -6,10 +6,11 @@ const jestConfig = {
     testRegex: '\\.(spec|e2e-spec)\\.ts$',
     transform: {
         '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
-        // uuid ships ESM only. Node can require() it, jest's CommonJS registry cannot, so it is compiled here.
+        // Some dependencies ship ESM only. Node can require() them, jest's CommonJS registry cannot,
+        // so they are compiled here.
         '^.+\\.js$': ['ts-jest', { tsconfig: { allowJs: true, module: 'commonjs', target: 'ES2022' } }],
     },
-    transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?uuid)'],
+    transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?(uuid|htmlparser2|domhandler|domutils|dom-serializer|domelementtype|entities)[/@])'],
     // tsconfig "paths" is not read by jest's resolver.
     moduleNameMapper: {
         '^@modules/(.*)$': '<rootDir>/src/modules/$1',
