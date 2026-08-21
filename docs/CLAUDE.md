@@ -8,6 +8,7 @@
 
 | 영역 | 진입점 | 다루는 것 |
 | --- | --- | --- |
+| 기능 명세 | [specifications/CLAUDE.md](./specifications/CLAUDE.md) | 이 서비스가 어떤 기능을 지원하고, 그 기능이 무엇을 일으키는가 |
 | 아키텍처 | [architectures/CLAUDE.md](./architectures/CLAUDE.md) | 서비스·모듈·레이어 경계, 도메인 모델과 영속성 매핑, 트랜잭션과 메시징의 원칙 |
 | 코드 컨벤션 | [code-conventions/CLAUDE.md](./code-conventions/CLAUDE.md) | 반복되는 코드의 형태와 이름 규칙 |
 | 운영 | [operations/CLAUDE.md](./operations/CLAUDE.md) | 서비스를 실행하는 방법과 실행 환경이 지켜야 할 약속 |

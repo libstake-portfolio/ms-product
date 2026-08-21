@@ -112,6 +112,7 @@ Docs, like code, follow single-source, self-containment, and generalization.
 - **No stateful content**: don't write plans, milestones, TODOs, future plans, etc. in general docs. Stateful content should be managed only in dedicated docs when needed, e.g. `backlogs.md`, `plans.md`, `decisions.md`.
 - **Cascading changes**: after finishing, check whether your doc edit conflicts with existing docs, and cascade the follow-up work accordingly.
 - **No indirect context**: when a non-technical reason A leads to conclusion B, the narration "B happened because of A" is forbidden. Write only the conclusion.
+- **Specification-area exception**: `docs/specifications/` does not follow "Generalization" or "a doc describes only direction". A specification names product concepts definitively, describes behavior and what it sets off, and may include state diagrams and screen examples. Code identifiers, schema names, and file paths stay out of specifications too.
 
 #### Pre-change checks
 - Is the same fact stated differently in another doc/section? (Contradiction check — resolve immediately when found.)
@@ -122,3 +123,30 @@ Criterion: if you removed this doc, is it clear where the topic would go? Does t
 
 ### 0.10 Do not modify this document (Working principles)
 Unless an explicit policy change is made by the user, do not modify any content within this document. This document is the overriding principle.
+
+---
+
+## 1. Working procedure
+
+> The order a feature task runs in. What to judge by at each step is owned by the working principles above.
+
+### 1.1 Receive the requirement
+Feature requirements arrive rough. Do not start building from them as received.
+
+### 1.2 Make it concrete and ask about the gaps
+Break the requirement down feature by feature and find what has not been decided yet. Do not fill ambiguity with guesses — ask (§0.1). While a gap remains, do not move on to the next step.
+
+### 1.3 Write the specification
+Record the filled-in requirement as a specification under `docs/specifications/`. A specification becomes final by the user's approval. A feature built without one has no basis. When changing a feature, change the specification first.
+
+### 1.4 Build to the specification
+Do not build what the specification does not say. When implementation reaches something the specification does not answer, do not settle it in code — return to 1.2.
+
+### 1.5 Verify
+Iterate until the success criteria (§0.5) are confirmed. Type checking, static analysis, format checking, tests, and the build must all pass before it is done.
+
+### 1.6 Reflect it in the docs
+Decide which of specification, architecture, or decision record this change touches, and carry the cascading edits through (§0.9).
+
+### 1.7 Report
+State what was delivered and what was not. If a verification did not pass, say so plainly.
