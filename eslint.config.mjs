@@ -23,6 +23,13 @@ const crossModulePattern = name => ({
     message: 'Reach another feature module only through its types, orm-entities, application, or module file.',
 });
 
+// A library under common keeps the shape of a package: one entry names its surface, so the
+// files behind it stay free to move when the library is published from its own repository.
+const libraryEntryPattern = {
+    group: ['@common/libs/*/*', '@common/libs/*/**'],
+    message: 'Reach a library through its entry only: @common/libs/<name>.',
+};
+
 // Three levels up already leaves the module; the alias keeps such a hop visible.
 const relativeEscapePattern = {
     group: ['../../../*', '../../../**'],
@@ -40,11 +47,11 @@ const restrictImports = patterns => ({ '@typescript-eslint/no-restricted-imports
 const featureModuleBoundaries = FEATURE_MODULES.flatMap(name => [
     {
         files: [`src/modules/features/${name}/**/*.ts`],
-        rules: restrictImports([crossModulePattern(name), relativeEscapePattern]),
+        rules: restrictImports([crossModulePattern(name), relativeEscapePattern, libraryEntryPattern]),
     },
     ...Object.keys(OUTER_LAYERS).map(layer => ({
         files: [`src/modules/features/${name}/${layer}/**/*.ts`],
-        rules: restrictImports([crossModulePattern(name), relativeEscapePattern, outerLayerPattern(layer)]),
+        rules: restrictImports([crossModulePattern(name), relativeEscapePattern, libraryEntryPattern, outerLayerPattern(layer)]),
     })),
 ]);
 
@@ -70,6 +77,7 @@ export default defineConfig([
             '@typescript-eslint/no-empty-object-type': 'off',
             '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
             'no-console': 'warn',
+            ...restrictImports([libraryEntryPattern]),
             'import/no-unresolved': 'error',
             'import/order': [
                 'warn',
