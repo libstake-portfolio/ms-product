@@ -1,6 +1,6 @@
 import { ValueObject } from './value-object';
 
-export abstract class AnyId<Brand extends string, T extends string | number = string> extends ValueObject<AnyId<Brand, T>, T> {
+export abstract class AnyId<Brand extends string, T extends string = string> extends ValueObject<AnyId<Brand, T>, T> {
     // Nominal marker. Without a per-subclass literal, ids sharing an underlying type stay mutually assignable.
     declare public readonly _brand: Brand;
 

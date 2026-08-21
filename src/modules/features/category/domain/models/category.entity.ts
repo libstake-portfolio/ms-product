@@ -1,4 +1,4 @@
-import { DomainEntity } from '@common/base/domain-entity';
+import { AggregateRootEntity } from '@common/base/aggregate-root-entity';
 
 import { CategoryId } from '../../types/ids/category-id';
 
@@ -12,7 +12,7 @@ export interface CategoryProps {
     children: Category[];
 }
 
-export class Category extends DomainEntity {
+export class Category extends AggregateRootEntity {
     public readonly id: CategoryId;
     protected _parentId: CategoryId | null;
 

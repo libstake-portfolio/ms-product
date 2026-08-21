@@ -4,18 +4,17 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import loggerConfig from '@configs/logger.config';
 import { AppConfigModule } from '@modules/common/app-config/app-config.module';
 import { DatabaseModule } from '@modules/common/database/database.module';
+import { TransactionModule } from '@modules/common/database/transaction.module';
 import { HealthModule } from '@modules/common/health/health.module';
+import { ServerCqrsModule } from '@modules/common/server-cqrs/server-cqrs.module';
 import { ServerLoggerModule, ServerLoggerModuleOptions } from '@modules/common/server-logger/server-logger.module';
 
 @Module({
-    imports: [DatabaseModule],
-})
-class NestedModule {}
-
-@Module({
     imports: [
-        // Update the AppConfigModule for updating configs
-        AppConfigModule.forRootAsync(),
+        ServerCqrsModule,
+        DatabaseModule,
+        TransactionModule,
+        HealthModule,
         ServerLoggerModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService): ServerLoggerModuleOptions => {
@@ -36,8 +35,16 @@ class NestedModule {}
                 };
             },
         }),
+    ],
+})
+class NestedModule {}
+
+@Module({
+    imports: [
+        // Update the AppConfigModule for updating configs
+        AppConfigModule.forRootAsync(),
+
         NestedModule,
-        HealthModule,
     ],
 })
 export class AppModule {}

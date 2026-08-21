@@ -1,4 +1,4 @@
-import { DomainEntity } from '@common/base/domain-entity';
+import { AggregateRootEntity } from '@common/base/aggregate-root-entity';
 
 import { OptionId } from '../../types/ids/option-id';
 
@@ -12,7 +12,7 @@ export interface OptionProps {
     optionValues: OptionValue[];
 }
 
-export class Option extends DomainEntity {
+export class Option extends AggregateRootEntity {
     public readonly id: OptionId;
 
     protected _name: string;

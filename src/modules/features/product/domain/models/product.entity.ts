@@ -1,4 +1,4 @@
-import { DomainEntity } from '@common/base/domain-entity';
+import { AggregateRootEntity } from '@common/base/aggregate-root-entity';
 import { removeHtmlTags, sanitizeHtml } from '@common/utils/html';
 import { CategoryId } from '@modules/features/category/types/ids/category-id';
 
@@ -19,7 +19,7 @@ export interface ProductProps {
     variants: Variant[];
 }
 
-export class Product extends DomainEntity {
+export class Product extends AggregateRootEntity {
     public readonly id: ProductId;
 
     protected _categoryId: CategoryId | null;
